@@ -1,0 +1,85 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+
+  # Desenvolvimento padrão: ambiente de TESTE
+  backend:
+    build: ./backend
+    profiles: ["teste", "default"]
+    env_file:
+      - ./backend/.env
+    ports:
+      - "3001:3001"
+    volumes:
+      - whatsapp_auth_teste:/app/data/whatsapp-auth
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: escalas_teste
+      DB_NAME_PROD: escalas_prod
+      DB_NAME_HML: escalas_hml
+      APP_MODE: teste
+      JWT_SECRET: escalas_plus_secret_key_2026
+      FRONTEND_URL: http://localhost:3000
+      WHATSAPP_AUTH_DIR: /app/data/whatsapp-auth
+    depends_on:
+      - db
+
+  backend-hml:
+    build: ./backend
+    profiles: ["hml"]
+    env_file:
+      - ./backend/.env
+    ports:
+      - "3002:3001"
+    volumes:
+      - whatsapp_auth_hml:/app/data/whatsapp-auth
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: escalas_hml
+      DB_NAME_PROD: escalas_prod
+      DB_NAME_HML: escalas_hml
+      APP_MODE: hml
+      JWT_SECRET: escalas_plus_secret_key_2026
+      FRONTEND_URL: http://localhost:3000
+      WHATSAPP_AUTH_DIR: /app/data/whatsapp-auth
+    depends_on:
+      - db
+
+  backend-prod:
+    build: ./backend
+    profiles: ["prod"]
+    env_file:
+      - ./backend/.env
+    ports:
+      - "3003:3001"
+    volumes:
+      - whatsapp_auth_prod:/app/data/whatsapp-auth
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: escalas_prod
+      DB_NAME_PROD: escalas_prod
+      DB_NAME_HML: escalas_hml
+      APP_MODE: prod
+      JWT_SECRET: escalas_plus_secret_key_2026
+      FRONTEND_URL: http://localhost:3000
+      WHATSAPP_AUTH_DIR: /app/data/whatsapp-auth
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
+  whatsapp_auth_teste:
+  whatsapp_auth_hml:
+  whatsapp_auth_prod:

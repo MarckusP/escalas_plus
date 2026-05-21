@@ -1,0 +1,80 @@
+# --- Dependências ---
+node_modules/
+.pnp
+.pnp.js
+
+# --- Build / compilados ---
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# --- Next.js (frontend) ---
+frontend/.next/
+frontend/out/
+
+# --- Variáveis de ambiente (nunca versionar segredos) ---
+.env
+.env.*
+!.env.example
+!**/.env.example
+!**/.env.*.example
+
+# --- WhatsApp Baileys (sessão local) ---
+backend/data/
+**/whatsapp-auth/
+
+# --- Logs e debug ---
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# --- Testes e cobertura ---
+coverage/
+.nyc_output/
+*.lcov
+
+# --- Cache de ferramentas ---
+.cache/
+.parcel-cache/
+.eslintcache
+.turbo/
+.vercel/
+
+# --- SO ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+# --- IDEs ---
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# VS Code / Cursor (manter settings compartilhados se quiser — descomente a linha abaixo)
+# .vscode/
+# .cursor/
+
+# --- Docker (overrides locais, não o compose principal) ---
+docker-compose.override.yml
+docker-compose.*.local.yml
+
+# --- Backups e dumps de banco ---
+*.sql.gz
+*.dump
+/backups/
+
+# --- Misc ---
+*.pem
+*.key
+*.p12
+.credentials/

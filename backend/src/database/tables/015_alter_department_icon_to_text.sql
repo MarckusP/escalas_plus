@@ -1,0 +1,1 @@
+ALTER TABLE departments ALTER COLUMN icon TYPE TEXT;

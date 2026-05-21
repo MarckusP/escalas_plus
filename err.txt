@@ -1,0 +1,10 @@
+Erro nas migrações: Error: connect ECONNREFUSED 172.18.0.2:5432
+    at /app/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async runMigrations (/app/dist/database/runMigrations.js:22:13) {
+  errno: -111,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '172.18.0.2',
+  port: 5432
+}

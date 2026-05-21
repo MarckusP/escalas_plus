@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS churches (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(200) NOT NULL UNIQUE,
+  address TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
