@@ -1,31 +1,61 @@
-# --- Dependências ---
+# =============================================================================
+# Escalas Plus — Git ignore
+# Mantém no repo: *.example, docker-compose.yml, cloudflare/*.example.yml
+# =============================================================================
+
+# --- Dependências Node ---
 node_modules/
+**/node_modules/
 .pnp
 .pnp.js
+.yarn/cache
+.yarn/unplugged
+.yarn/install-state.gz
 
-# --- Build / compilados ---
+# --- Build / artefatos compilados ---
 dist/
+**/dist/
 build/
+**/build/
 out/
+**/out/
 *.tsbuildinfo
 
-# --- Next.js (frontend) ---
-frontend/.next/
-frontend/out/
+# --- Next.js ---
+.next/
+**/.next/
+out/
+next-env.d.ts.bak
 
-# --- Variáveis de ambiente (nunca versionar segredos) ---
+# --- Variáveis de ambiente e segredos ---
 .env
-.env.*
-!.env.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+**/.env
+**/.env.local
+# Qualquer .env.* exceto templates versionados
+**/.env.*
 !**/.env.example
 !**/.env.*.example
+!.env.example
 
-# --- WhatsApp Baileys (sessão local) ---
+# --- Cloudflare Tunnel (credenciais locais; não commitar) ---
+.cloudflared/
+**/.cloudflared/
+cloudflare/config.yml
+!cloudflare/config.example.yml
+!cloudflare/**/*.example.yml
+
+# --- WhatsApp (Baileys) — sessão e dados locais ---
 backend/data/
 **/whatsapp-auth/
+*.session
 
-# --- Logs e debug ---
+# --- Logs ---
 logs/
+**/logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -37,44 +67,71 @@ lerna-debug.log*
 coverage/
 .nyc_output/
 *.lcov
+.jest/
 
 # --- Cache de ferramentas ---
 .cache/
+**/.cache/
 .parcel-cache/
 .eslintcache
 .turbo/
 .vercel/
+.swc/
 
-# --- SO ---
+# --- Banco / backups (nunca versionar dumps) ---
+pgdata/
+**/pgdata/
+*.sql.gz
+*.dump
+/backups/
+**/backups/
+
+# --- Docker (somente overrides locais) ---
+docker-compose.override.yml
+docker-compose.*.local.yml
+.docker/
+
+# --- Certificados e chaves ---
+*.pem
+*.key
+*.p12
+*.pfx
+.credentials/
+**/secrets/
+
+# --- Sistema operacional ---
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
 Thumbs.db
-Desktop.ini
 ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
 
-# --- IDEs ---
+# --- IDEs / editores ---
 .idea/
+*.sublime-project
+*.sublime-workspace
 *.swp
 *.swo
 *~
 .project
 .classpath
 .settings/
+*.code-workspace
 
-# VS Code / Cursor (manter settings compartilhados se quiser — descomente a linha abaixo)
+# VS Code — descomente para ignorar config local da equipe
 # .vscode/
+# !.vscode/extensions.json
+
+# Cursor — descomente se não quiser versionar regras locais
 # .cursor/
 
-# --- Docker (overrides locais, não o compose principal) ---
-docker-compose.override.yml
-docker-compose.*.local.yml
-
-# --- Backups e dumps de banco ---
-*.sql.gz
-*.dump
-/backups/
-
 # --- Misc ---
-*.pem
-*.key
-*.p12
-.credentials/
+*.tgz
+*.orig
+*.bak
+tmp/
+temp/

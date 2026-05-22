@@ -97,18 +97,18 @@ export default function SatisfactionDashboardPanel() {
       .finally(() => setSatLoading(false));
   }, [user, isSuper, satChurchId, satMode, satDeptId, satVolunteerId]);
 
-  const satChartData = useMemo(() => {
+  const satChartData = useMemo((): Record<string, string | number>[] => {
     if (satMode === 'geral') {
       return satSeries.map((r: any) => ({
         period: r.period,
         media: Number(r.avg_score),
-      }));
+      })) as Record<string, string | number>[];
     }
     if (satMode === 'individual') {
       return satSeries.map((r: any) => ({
         period: r.period?.slice(0, 10) || r.period,
         nota: Number(r.avg_score),
-      }));
+      })) as Record<string, string | number>[];
     }
     const periods = [...new Set(satSeries.map((r: any) => r.period))];
     return periods.map(period => {

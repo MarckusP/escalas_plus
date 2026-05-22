@@ -11,7 +11,7 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
 
-  # Desenvolvimento padrão: ambiente de TESTE
+  # --- TESTE (padrão): docker compose up -d ---
   backend:
     build: ./backend
     profiles: ["teste", "default"]
@@ -34,6 +34,20 @@ services:
     depends_on:
       - db
 
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:3001/api
+        NEXT_PUBLIC_APP_URL: http://localhost:3000
+        NEXT_PUBLIC_APP_MODE: teste
+    profiles: ["teste", "default"]
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  # --- HOMOLOGAÇÃO: docker compose --profile hml up -d ---
   backend-hml:
     build: ./backend
     profiles: ["hml"]
@@ -51,11 +65,25 @@ services:
       DB_NAME_HML: escalas_hml
       APP_MODE: hml
       JWT_SECRET: escalas_plus_secret_key_2026
-      FRONTEND_URL: http://localhost:3000
+      FRONTEND_URL: http://localhost:3010
       WHATSAPP_AUTH_DIR: /app/data/whatsapp-auth
     depends_on:
       - db
 
+  frontend-hml:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:3002/api
+        NEXT_PUBLIC_APP_URL: http://localhost:3010
+        NEXT_PUBLIC_APP_MODE: hml
+    profiles: ["hml"]
+    ports:
+      - "3010:3000"
+    depends_on:
+      - backend-hml
+
+  # --- PRODUÇÃO (local): docker compose --profile prod up -d ---
   backend-prod:
     build: ./backend
     profiles: ["prod"]
@@ -73,10 +101,23 @@ services:
       DB_NAME_HML: escalas_hml
       APP_MODE: prod
       JWT_SECRET: escalas_plus_secret_key_2026
-      FRONTEND_URL: http://localhost:3000
+      FRONTEND_URL: http://localhost:3020
       WHATSAPP_AUTH_DIR: /app/data/whatsapp-auth
     depends_on:
       - db
+
+  frontend-prod:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:3003/api
+        NEXT_PUBLIC_APP_URL: http://localhost:3020
+        NEXT_PUBLIC_APP_MODE: prod
+    profiles: ["prod"]
+    ports:
+      - "3020:3000"
+    depends_on:
+      - backend-prod
 
 volumes:
   pgdata:

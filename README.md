@@ -68,54 +68,52 @@ cp backend/.env.example backend/.env
 
 Ajuste `JWT_SECRET` em produção. O `.env` **não** é versionado.
 
-### 2. Subir banco + backend (teste)
+### 2. Subir stack completa (teste)
 
 ```bash
-docker compose up -d
+docker compose up -d --build
 ```
 
-- Postgres: `localhost:5432`
-- API (teste): `http://localhost:3001/api`
+| Serviço | URL |
+|---------|-----|
+| App (frontend) | http://localhost:3000 |
+| API (backend) | http://localhost:3001/api |
+| Postgres | `localhost:5432` |
 
-### 3. Frontend
+O frontend usa imagem **Next.js standalone** (`frontend/Dockerfile`). As variáveis `NEXT_PUBLIC_*` são definidas no **build** via `docker-compose.yml` (URLs acessíveis pelo navegador no host).
+
+### 3. Frontend só no host (opcional)
+
+Se preferir hot-reload em desenvolvimento:
 
 ```bash
-cd frontend
-npm install
+docker compose up -d db backend
+cd frontend && cp .env.example .env.local && npm install && npm run dev
 ```
 
-Crie `frontend/.env.local`:
-
-```env
-NEXT_PUBLIC_API_URL=http://localhost:3001/api
-NEXT_PUBLIC_APP_MODE=teste
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-```
+### 4. Rebuild após mudanças
 
 ```bash
-npm run dev
+# Backend
+docker compose build backend && docker compose up -d backend
+
+# Frontend (NEXT_PUBLIC_* mudou → precisa rebuild)
+docker compose build frontend && docker compose up -d frontend
+
+# Tudo
+docker compose up -d --build
 ```
 
-Acesse: **http://localhost:3000**
+**Domínio público (Cloudflare):** altere os `build.args` do serviço `frontend` no `docker-compose.yml` (ou passe no build) com `https://api.seudominio.com/api` e `https://app.seudominio.com`, depois `docker compose build frontend`.
 
-### 4. Rebuild após mudanças no backend
+## Outros ambientes (Docker profiles)
 
-```bash
-docker compose build backend
-docker compose up -d backend
-```
+| Ambiente | Comando | App | API |
+|----------|---------|-----|-----|
+| Homologação | `docker compose --profile hml up -d --build` | http://localhost:3010 | http://localhost:3002/api |
+| Produção | `docker compose --profile prod up -d --build` | http://localhost:3020 | http://localhost:3003/api |
 
-## Outros backends (Docker profiles)
-
-| Ambiente | Comando | Porta API |
-|----------|---------|-----------|
-| Homologação | `docker compose --profile hml up -d backend-hml` | 3002 |
-| Produção | `docker compose --profile prod up -d backend-prod` | 3003 |
-
-Exemplos de frontend (copie para `.env.local`):
-
-- `frontend/.env.hml.example` → API na porta **3002**, `NEXT_PUBLIC_APP_MODE=hml`
-- `frontend/.env.prod.example` → API na porta **3003**, `NEXT_PUBLIC_APP_MODE=prod`
+Arquivos de referência: `frontend/.env.hml.example`, `frontend/.env.prod.example`.
 
 ## Usuários de teste (APP_MODE=teste)
 
@@ -224,6 +222,15 @@ docker logs escalas-plus-backend-1 -f
 - Nunca commite `.env` ou `frontend/.env.local` (use os arquivos `*.example`).
 - Troque `JWT_SECRET` e senhas do Postgres em produção.
 - O sync prod→hml é destrutivo no banco de homologação — use apenas com confirmação consciente.
+
+## Publicar na internet (Cloudflare + sua máquina)
+
+Para apontar seu domínio na Cloudflare para o app rodando no PC (sem abrir portas no roteador), use **Cloudflare Tunnel** (`cloudflared`).
+
+Guia passo a passo: **[docs/cloudflare-tunnel.md](docs/cloudflare-tunnel.md)**  
+Exemplo de config: **[cloudflare/config.example.yml](cloudflare/config.example.yml)**
+
+Resumo: subdomínio `app.` → frontend `:3000`, `api.` → backend `:3001`, e variáveis `FRONTEND_URL` / `NEXT_PUBLIC_API_URL` com HTTPS do domínio.
 
 ## Licença
 

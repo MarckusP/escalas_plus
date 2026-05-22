@@ -1,0 +1,12 @@
+# Copie para: %USERPROFILE%\.cloudflared\config.yml
+# Ajuste tunnel, credentials-file e hostnames.
+
+tunnel: escalas-plus
+credentials-file: C:\Users\SEU_USUARIO\.cloudflared\COLE_O_TUNNEL_ID.json
+
+ingress:
+  - hostname: app.seudominio.com
+    service: http://127.0.0.1:3000
+  - hostname: api.seudominio.com
+    service: http://127.0.0.1:3001
+  - service: http_status:404
